@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { fetchPosts, getPostsError, getPostsStatus, selectAllPosts } from "./postsSlice";
 import PostAuthor from "./PostAuthor";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const PostList=()=>{
 
@@ -20,8 +21,10 @@ const PostList=()=>{
     const renderedPosts = posts.map((post)=>(
         <div key={post.id}>
             <h3>{post.title}</h3>
-            <p>{post.body.substring(0,100)}</p>
-            <PostAuthor userID={post.userId}></PostAuthor>
+            <p>{post.body.substring(0,75)}...</p>
+            <PostAuthor userID={post.userId}></PostAuthor>&nbsp;&nbsp;&nbsp;
+            <Link to={`post/${post.id}`}>View Post</Link>
+
         </div>
     ))
 
@@ -38,7 +41,7 @@ const PostList=()=>{
 
     return (
         <div>
-            <h2>Posts</h2>
+            <Link to='post'>Add New Post</Link>
             {content}
         </div>
     )

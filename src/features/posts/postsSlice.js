@@ -69,6 +69,9 @@ export const postsSlice = createSlice({
 export const selectAllPosts = (state) => state.posts.posts;
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
+export const getPostByID = (state,id) => {
+    return state.posts.posts.find(post=>post.id===id);
+}
 
 export const { postAdded } = postsSlice.actions;
 
