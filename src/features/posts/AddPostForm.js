@@ -1,26 +1,36 @@
 import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
-import { postAdded } from "./postsSlice";
+import { addNewPost, postAdded } from "./postsSlice";
 import { selectAllUsers } from "../users/usersSlice";
 
 const AddPostForm=()=>{
 
     const [title,setTitle] = useState("");
-    const [content,setContent] = useState("");
+    const [body,setContent] = useState("");
     const [author,setAuthor] = useState("");
+    const [addRequestStatus,setAddReqStatus] = useState("idle");
 
     const users = useSelector(selectAllUsers);
 
     const dispatch = useDispatch();
 
     const savePost=()=>{
-        if (title && content){
-            dispatch(
-                postAdded(title,content,author)
-            )
-            setTitle("")
-            setContent("")
+        if (title && body && addRequestStatus ==="idle"){
+            try{
+                setAddReqStatus("pending")
+                dispatch(
+                    addNewPost({title,body,userId: author})
+                ).unwrap()
+                setTitle("")
+                setContent("")
+                setAuthor("")
+            }
+            catch (err){
+                console.error("Error adding new post: "+err.message)
+            } finally {
+                setAddReqStatus("idle")
+            }
         }
     }
 
@@ -39,7 +49,7 @@ const AddPostForm=()=>{
                     <option value=""></option>
                     {userOptions}
                 </select><br></br>
-                <textarea placeholder="Post Content" value={content} onChange={(e)=>setContent(e.target.value)}></textarea><br></br>
+                <textarea placeholder="Post Content" value={body} onChange={(e)=>setContent(e.target.value)}></textarea><br></br>
                 <button type="button" onClick={savePost}>Add</button>
             </form>
         </div>
