@@ -1,11 +1,13 @@
-import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, nanoid, createAsyncThunk, createEntityAdapter } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState = {
-    posts: [],
+const postsAdapter= createEntityAdapter();
+
+const initialState = postsAdapter.getInitialState({
+    //posts: [],
     status: 'idle',
     error: null,
-}
+})
 
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     try {
@@ -53,7 +55,8 @@ export const postsSlice = createSlice({
             .addCase(fetchPosts.fulfilled, (state, action) => {
                 state.status = "succeeded";
                 // Can also add info to action.payload copy
-                state.posts = state.posts.concat(action.payload);
+                //state.posts = state.posts.concat(action.payload);
+                postsAdapter.upsertMany(state,action.payload);
             })
             .addCase(fetchPosts.rejected, (state, action) => {
                 state.status = "failed";
@@ -61,17 +64,24 @@ export const postsSlice = createSlice({
             })
             .addCase(addNewPost.fulfilled, (state, action) => {
                 action.payload.userId = Number(action.payload.userId);
-                state.posts.push(action.payload)
+                // state.posts.push(action.payload)
+                postsAdapter.addOne(state,action.payload)
             })
     }
 });
 
-export const selectAllPosts = (state) => state.posts.posts;
+// export const selectAllPosts = (state) => state.posts.posts;
 export const getPostsStatus = (state) => state.posts.status;
 export const getPostsError = (state) => state.posts.error;
-export const getPostByID = (state,id) => {
-    return state.posts.posts.find(post=>post.id===id);
-}
+// export const getPostByID = (state,id) => {
+//     return state.posts.posts.find(post=>post.id===id);
+// }
+
+export const {
+    selectAll: selectAllPosts,
+    selectById: getPostByID,
+    selectIds: selectPostIds
+} = postsAdapter.getSelectors(state=>state.posts)
 
 export const { postAdded } = postsSlice.actions;
 
