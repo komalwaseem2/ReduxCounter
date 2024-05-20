@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
 import { addNewPost, postAdded } from "./postsSlice";
 import { selectAllUsers } from "../users/usersSlice";
+import { useNavigate } from "react-router-dom";
 
 const AddPostForm=()=>{
 
@@ -14,6 +15,8 @@ const AddPostForm=()=>{
     const users = useSelector(selectAllUsers);
 
     const dispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const savePost=()=>{
         if (title && body && addRequestStatus ==="idle"){
@@ -30,6 +33,7 @@ const AddPostForm=()=>{
                 console.error("Error adding new post: "+err.message)
             } finally {
                 setAddReqStatus("idle")
+                navigate("/")
             }
         }
     }
